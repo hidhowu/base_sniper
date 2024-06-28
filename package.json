@@ -1,0 +1,29 @@
+{
+  "name": "base",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.43.1",
+    "@uniswap/sdk": "^3.0.3",
+    "@uniswap/sdk-core": "^5.0.0",
+    "@uniswap/v2-sdk": "^4.3.2",
+    "abi-decoder": "^2.4.0",
+    "alchemy-sdk": "^3.3.1",
+    "bignumber.js": "^9.1.2",
+    "eth-abi": "^1.0.7",
+    "ethereum-input-data-decoder": "^0.4.2",
+    "ethereum-tx-decoder": "^3.0.0",
+    "ethereumjs-abi": "^0.6.8",
+    "ethereumjs-util": "^7.1.5",
+    "ethers": "5.7",
+    "fs": "^0.0.1-security",
+    "web3": "^4.8.0",
+    "web3-core": "^4.3.2"
+  }
+}
