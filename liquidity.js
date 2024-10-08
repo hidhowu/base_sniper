@@ -2,7 +2,7 @@ require('dotenv').config();
 const { Web3 } = require('web3');
 const rpc_url = process.env.RPC_URL;
 
-const web3 = new Web3(rpc_url);
+const web3 = new Web3('https://base-mainnet.g.alchemy.com/v2/tfWRuH15fsRSByrDgjUf1mp5s70eV4v7');
 
 
 const abi = [
