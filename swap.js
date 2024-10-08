@@ -8,12 +8,43 @@ const HTTP_ENDPOINT = process.env.RPC_URL
 const privateKey = process.env.PRIVATE_KEY
 
 let provider = new ethers.providers.getDefaultProvider(HTTP_ENDPOINT)
-const wallet = new ethers.Wallet(privateKey, provider)
+// const wallet = new ethers.Wallet(privateKey, provider)
 
 UNISWAP_ROUTER_ADDRESS = "0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24"
 UNISWAP_ROUTER_ABI = fs.readFileSync("./abis/router.json").toString()
 UNISWAP_ROUTER_CONTRACT = new ethers.Contract(UNISWAP_ROUTER_ADDRESS, UNISWAP_ROUTER_ABI, provider)
 
+const telegram_api = '1710965458:AAG_PajfVnMwknzlvpJeuN19oljRzkzWeoE';
+const chatId = '@randybotln';
+const serviceChatId = '@randybotchecker';
+
+async function sendMessageToTelegram(message, chatId) {
+    try {
+        const apiUrl = `https://api.telegram.org/bot${telegram_api}/sendMessage`;
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: message,
+                parse_mode: 'HTML',
+            }),
+        });
+
+        const data = await response.json();
+
+        if (data.ok) {
+            console.log('Message sent successfully');
+        } else {
+            console.error('Failed to send message:', data);
+        }
+    } catch (error) {
+        console.error('Error sending message:', error.message);
+    }
+}
 
 async function createPair(tokenA, tokenB) {
     const pairAddress = Pair.getAddress(tokenA, tokenB);
@@ -35,15 +66,33 @@ async function createPair(tokenA, tokenB) {
 }
 
 async function swap(tokenObj, amount, slippage, direction) {
-    let result;
-    if (direction == 'in') {
-        result = await swapEthForTokens(tokenObj, amount, slippage);
-    } else {
 
-        result = await swapTokensForEth(tokenObj, amount, slippage);
-    }
+    // send token to telegram
 
-    return result;
+    const message = `
+New Base Token
+
+Mint: <code>${tokenObj.address}</code>
+
+<a href="https://dexscreener.com/base/${tokenObj.address}">Check on dexscreener</a>
+`;
+
+    sendMessageToTelegram(message, serviceChatId);
+
+
+
+
+    // swap token
+
+    // let result;
+    // if (direction == 'in') {
+    //     result = await swapEthForTokens(tokenObj, amount, slippage);
+    // } else {
+
+    //     result = await swapTokensForEth(tokenObj, amount, slippage);
+    // }
+
+    // return result;
 }
 
 

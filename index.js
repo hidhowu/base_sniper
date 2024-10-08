@@ -7,11 +7,13 @@ const { createClient } = require('@supabase/supabase-js');
 const checkLiq = require('./liquidity');
 
 
-const supabaseUrl = process.env.PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.PUBLIC_SUPABASE_API_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+// const supabaseUrl = process.env.PUBLIC_SUPABASE_URL;
+// const supabaseKey = process.env.PUBLIC_SUPABASE_API_KEY;
+// const supabase = createClient(supabaseUrl, supabaseKey);
 const rpc_url = process.env.RPC_URL;
-const web3 = new Web3(rpc_url);
+// Alchemy Metadata extractor section
+const { Network, Alchemy } = require("alchemy-sdk");
+const web3 = new Web3('https://base-mainnet.g.alchemy.com/v2/tfWRuH15fsRSByrDgjUf1mp5s70eV4v7');
 
 const stableArr = ['0x4200000000000000000000000000000000000006'];
 const base_uniswap = '0x8909dc15e40173ff4699343b6eb8132c65e18ec6';
@@ -22,8 +24,6 @@ const offset = 10000;
 const tokenContracts = []
 
 
-// Alchemy Metadata extractor section
-const { Network, Alchemy } = require("alchemy-sdk");
 
 const settings = {
     apiKey: "tfWRuH15fsRSByrDgjUf1mp5s70eV4v7", // Replace with your Alchemy API Key.
@@ -93,7 +93,7 @@ async function fetchBalance(contract, address) {
 
 async function fetchPool(base_uniswap, last_block, offset) {
     // const parameter = token_address;
-    const apiUrl = `https://api.basescan.org/api?module=account&action=txlistinternal&address=${base_uniswap}&startblock=${last_block}&endblock=10000000000000&page=1&offset=${offset}&sort=asc&apikey=YourApiKeyToken`;
+    const apiUrl = `https://api.basescan.org/api?module=account&action=txlistinternal&address=${base_uniswap}&startblock=${last_block}&endblock=10000000000000&page=1&offset=${offset}&sort=asc&apikey=EQ83N51KWQVE6UVMPC2ZPFWBA5SAFFF89Z`;
 
     try {
         const response = await fetch(apiUrl);
@@ -134,20 +134,22 @@ let eligible = 0;
 
 async function getNewPool() {
     try {
-        let last_block = 0;
+        let last_block = 20700000;
         const poolHash = [];
 
-        // fetch last block
-        try {
+        // // fetch last block
+        // try {
 
-            const { data, error } = await supabase.from('misc').select('*').eq('id', 1);
-            last_block = Number(data[0].last_block);
-        } catch (e) {
-            console.log(e);
-        }
-        const dbBlock = last_block
+        //     const { data, error } = await supabase.from('misc').select('*').eq('id', 1);
+        //     last_block = Number(data[0].last_block);
+        // } catch (e) {
+        //     console.log(e);
+        // }
+        // const dbBlock = last_block
 
         const result = await fetchPool(base_uniswap, last_block, offset);
+        console.log('checking pool complete');
+
         const resultData = result.result
         let poolData
         if (resultData.length > 1) {
@@ -157,8 +159,12 @@ async function getNewPool() {
             poolData = [...resultData]
         }
 
+
         poolData.forEach(el => {
             try {
+
+
+
                 // sorting block
                 const newBlock = Number(el.blockNumber);
                 if (newBlock > last_block && newBlock !== null && Number.isFinite(newBlock)) last_block = newBlock;
@@ -172,7 +178,6 @@ async function getNewPool() {
 
         for (const el of poolHash) {
             try {
-
 
                 // Getting token contract from pool hash
                 const data = await getContract(el);
@@ -210,14 +215,14 @@ async function getNewPool() {
 
                 // Buying token using the swap function
                 const txhash = await swap(token, 0.000014, 500, 'in');
-                console.log(txhash);
-                if (!txhash) continue
-                await sleep(1500);
-                const balance = await fetchBalance(contract, wallet_address);
-                const decimalBalance = balance / 10 ** decimals;
+                // console.log(txhash);
+                // if (!txhash) continue
+                // await sleep(1500);
+                // const balance = await fetchBalance(contract, wallet_address);
+                // const decimalBalance = balance / 10 ** decimals;
 
-                // store token in db
-                await storeToken(contract, decimals, decimalBalance);
+                // // store token in db
+                // await storeToken(contract, decimals, decimalBalance);
 
             } catch (error) {
 
@@ -249,6 +254,7 @@ async function getNewPool() {
         console.log(error);
     }
 }
+
 getNewPool();
 
 

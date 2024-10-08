@@ -27,7 +27,7 @@ const abi2 = [
 
 
 
-    // Checking and exxtracting token data from  on chain logs 
+// Checking and exxtracting token data from  on chain logs 
 async function checkLiq(hash) {
     try {
         const receipt = await web3.eth.getTransactionReceipt(hash);
@@ -62,6 +62,7 @@ async function checkLiq(hash) {
         // throw error; // Re-throw the error to handle it outside the function if needed
     }
 }
+
 module.exports = checkLiq;
 
 
